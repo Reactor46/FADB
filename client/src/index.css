@@ -1,0 +1,5 @@
+/* Simple CSS for the client */
+body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+input, select, textarea, button { font: inherit; }
+input, select, textarea { padding: 6px; margin-top: 4px; }
+button { padding: 8px 12px; }
