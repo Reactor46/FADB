@@ -7,6 +7,7 @@ services:
       - ./server/.env
     volumes:
       - ./data:/app/data:ro
+      - fadb-db:/app/db
     ports:
       - "8000:8000"
   frontend:
@@ -18,4 +19,12 @@ services:
     depends_on:
       - backend
 
-# Note: SQLite is file-based in ./data/fadb_sample.sqlite which is included in repo sample data.
+volumes:
+  fadb-db:
+
+# Notes:
+# - ./data (containing sample_firearms.csv) is mounted read-only into the
+#   backend at /app/data. It's the *source* data used to seed the DB.
+# - The SQLite database itself lives in the named volume `fadb-db`,
+#   mounted at /app/db (writable), so it persists across container
+#   restarts without needing write access to the read-only source data.

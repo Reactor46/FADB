@@ -10,6 +10,18 @@ from .database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
+# Seed the (otherwise empty) SQLite DB from the bundled sample CSV on first
+# startup. Safe to call on every restart: it's a no-op once data exists.
+_seed_db = SessionLocal()
+try:
+    _data_dir = os.environ.get('DATA_DIR', '/app/data')
+    _csv_path = os.path.join(_data_dir, 'sample_firearms.csv')
+    _n = crud.seed_from_csv_if_empty(_seed_db, _csv_path)
+    if _n:
+        print(f'[FADB] Seeded database with {_n} firearms from {_csv_path}')
+finally:
+    _seed_db.close()
+
 app = FastAPI(title='FADB API')
 
 @app.get('/api/manufacturers')

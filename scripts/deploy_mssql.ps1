@@ -21,7 +21,7 @@ param(
     [string[]] $Ddls = @('sql/ddl_mssql.sql'),
     [string[]] $Inserts = @(),
     [switch] $UseSqlCmd
-n)
+)
 
 function Run-SqlFile_InvokeSqlcmd {
     param($Server, $Database, $Username, $Password, $File)
