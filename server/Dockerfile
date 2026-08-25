@@ -1,19 +1,23 @@
-# Backend Dockerfile
-FROM python:3.11-slim
+# Dockerfile for server
 
-WORKDIR /app
+FROM node:18-bullseye-slim
 
-# system deps
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+# Install packages often required for native modules (sharp)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential python3 make gcc g++ libvips-dev ca-certificates && \
+  rm -rf /var/lib/apt/lists/*
 
-COPY server/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /usr/src/app
 
-COPY server /app
+# Copy package files and install dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci --production
 
-ENV PYTHONUNBUFFERED=1
-ENV DATA_DIR=/app/data
-ENV DB_DIR=/app/db
+# Copy the rest of the server
+COPY . .
 
-EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENV NODE_ENV=production
+ENV PORT=5000
+EXPOSE 5000
+
+CMD ["node", "index.js"]

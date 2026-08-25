@@ -1,30 +1,31 @@
+version: '3.8'
+
 services:
-  backend:
-    build: ./server
-    container_name: fadb-backend
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: reactor46/fadb-server:latest
+    container_name: fadb-server
     restart: unless-stopped
-    env_file:
-      - ./server/.env
     volumes:
-      - ./data:/app/data:ro
-      - fadb-db:/app/db
+      - ./data:/usr/src/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
     ports:
-      - "8000:8000"
-  frontend:
-    build: ./web
-    container_name: fadb-frontend
+      - "5000:5000"
+
+  web:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: reactor46/fadb-web:latest
+    container_name: fadb-web
     restart: unless-stopped
-    ports:
-      - "3000:80"
     depends_on:
-      - backend
+      - server
+    ports:
+      - "8080:80"
 
-volumes:
-  fadb-db:
-
-# Notes:
-# - ./data (containing sample_firearms.csv) is mounted read-only into the
-#   backend at /app/data. It's the *source* data used to seed the DB.
-# - The SQLite database itself lives in the named volume `fadb-db`,
-#   mounted at /app/db (writable), so it persists across container
-#   restarts without needing write access to the read-only source data.
+# Optional: add a reverse proxy or TLS in front of web if exposing publicly
