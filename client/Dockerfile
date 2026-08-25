@@ -2,8 +2,10 @@
 
 FROM node:18-alpine AS build
 WORKDIR /app
+# Copy package.json and package-lock if present, then install dependencies
 COPY package.json package-lock.json* ./
-RUN npm ci
+# Use npm install to avoid failing when package-lock.json is absent in the repo
+RUN npm install
 COPY . .
 RUN npm run build
 
