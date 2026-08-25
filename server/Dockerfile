@@ -21,7 +21,8 @@ WORKDIR /usr/src/app
 
 # Copy server package files and install production deps
 COPY server/package.json server/package-lock.json* ./
-RUN npm ci --production
+# Use npm install --production to avoid failing when package-lock.json is absent
+RUN npm install --production
 
 # Copy server source
 COPY server/ ./
