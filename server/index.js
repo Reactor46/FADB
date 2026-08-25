@@ -26,6 +26,17 @@ app.use(express.json());
 app.use(morgan('tiny'));
 app.use('/images', express.static(UPLOAD_DIR));
 
+// Serve static React build if present
+const PUBLIC_DIR = path.join(__dirname, 'public');
+if (fs.existsSync(PUBLIC_DIR)) {
+  app.use(express.static(PUBLIC_DIR));
+  // Fallback to index.html for client-side routing, but avoid intercepting API or image routes
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/images')) return next();
+    res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+  });
+}
+
 // List manufacturers
 app.get('/api/manufacturers', (req, res) => {
   try {
