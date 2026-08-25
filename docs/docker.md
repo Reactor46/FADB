@@ -7,9 +7,9 @@ both static assets and the API.
 Quick start
 
 1. Build and start:
-   docker-compose up --build -d
+   docker compose up --build -d
 
-2. Visit the app at http://localhost:8080
+2. Visit the app at http://localhost:8081
 
 3. Data persistence
    The server mounts ./data, so uploaded images and the SQLite database (data/fadb_user.sqlite) are persisted on the host.
