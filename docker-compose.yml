@@ -1,5 +1,3 @@
-# Docker Compose with both DB options present. Use scripts/select_db.sh to enable the desired DB.
-
 services:
   # MARIADB-BEGIN
   # mariadb:
@@ -24,6 +22,8 @@ services:
     image: reactor46/fadb-app:latest
     container_name: fadb-app
     restart: unless-stopped
+    volumes:
+      - ./data:/usr/src/app/data
     environment:
       - NODE_ENV=production
       - PORT=5000
@@ -33,14 +33,19 @@ services:
       # - DB_NAME=${MARIADB_DATABASE}
       # - DB_USER=${MARIADB_USER}
       # - DB_PASS=${MARIADB_PASSWORD}
-    volumes:
-      - ./data:/usr/src/app/data
     ports:
       - "8081:5000"
     depends_on:
-      # when mariadb is enabled, server will depend on it
       # - mariadb
       - ""
+    # TRAEFIK-BEGIN
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.fadb.rule=Host(`fadb.local`)"
+    #   - "traefik.http.routers.fadb.tls=true"
+    #   - "traefik.http.routers.fadb.tls.certresolver=letsencrypt"
+    #   - "traefik.http.services.fadb.loadbalancer.server.port=5000"
+    # TRAEFIK-END
 
 networks:
   default:
