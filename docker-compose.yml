@@ -1,4 +1,22 @@
+# Docker Compose with both DB options present. Use scripts/select_db.sh to enable the desired DB.
+
 services:
+  # MARIADB-BEGIN
+  # mariadb:
+  #   image: mariadb:10.11
+  #   container_name: fadb-mariadb
+  #   restart: unless-stopped
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+  #     - MYSQL_DATABASE=${MARIADB_DATABASE}
+  #     - MYSQL_USER=${MARIADB_USER}
+  #     - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+  #   volumes:
+  #     - ./mariadb_data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
+  # MARIADB-END
+
   server:
     build:
       context: .
@@ -6,12 +24,24 @@ services:
     image: reactor46/fadb-app:latest
     container_name: fadb-app
     restart: unless-stopped
-    volumes:
-      - ./data:/usr/src/app/data
     environment:
       - NODE_ENV=production
       - PORT=5000
+      # - DB_TYPE=mariadb
+      # - DB_HOST=mariadb
+      # - DB_PORT=3306
+      # - DB_NAME=${MARIADB_DATABASE}
+      # - DB_USER=${MARIADB_USER}
+      # - DB_PASS=${MARIADB_PASSWORD}
+    volumes:
+      - ./data:/usr/src/app/data
     ports:
       - "8081:5000"
+    depends_on:
+      # when mariadb is enabled, server will depend on it
+      # - mariadb
+      - ""
 
-# Single-container setup: the server builds the React frontend and serves it from Express
+networks:
+  default:
+    name: fadb_net
